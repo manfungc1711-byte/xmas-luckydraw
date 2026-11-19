@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
 
-  <!-- Firebase Compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- Firebase via jsDelivr (更穩定) -->
+  <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-database-compat.js"></script>
 
   <script>
     tailwind.config = {
@@ -51,7 +51,6 @@
     .ball-red { background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a); }
     .ball-green { background: radial-gradient(circle at 30% 30%, #51cf66, #2b8a3e); }
     .ball-blue { background: radial-gradient(circle at 30% 30%, #4dabf7, #1864ab); }
-
     .drum-container {
       position: relative; width: 260px; height: 260px; border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), rgba(0,0,0,0.65));
@@ -164,7 +163,6 @@
   </div>
 
   <script>
-    // 你的 Firebase Config（已填好）
     const firebaseConfig = {
       apiKey: "AIzaSyCSpQW-Q8ojSH9coIMdxM2hmlYOYWB5oVg",
       authDomain: "itmu---lucky-draw-realtime.firebaseapp.com",
@@ -188,7 +186,7 @@
     function initFirebase() {
       try {
         if (typeof firebase === 'undefined') {
-          showError('Firebase SDK 載入失敗，請檢查網絡');
+          showError('Firebase SDK 載入失敗，請檢查網絡或關閉廣告攔截');
           return;
         }
         firebase.initializeApp(firebaseConfig);
