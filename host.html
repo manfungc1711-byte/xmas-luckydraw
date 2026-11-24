@@ -133,7 +133,7 @@
         </div>
       </div>
       <div id="tab-rank" class="flex-grow overflow-y-auto space-y-2 pr-1">
-        <div class="text-xs text-yellow-200/80 bg-black/20 p-2 rounded-lg">ℹ️ 攪珠完成後先顯示得獎名單。Guest 會即時同步。</div>
+        <div class="text-xs text-yellow-200/80 bg-black/20 p-2 rounded-lg">ℹ️ 攪珠完成後先顯示得獎名單。</div>
         <div id="rankings-container" class="space-y-2"></div>
       </div>
       <div id="tab-cards" class="flex-grow overflow-y-auto hidden pr-1">
@@ -225,11 +225,11 @@
       });
       db.ref('draw').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data && data.main && data.special && !isDrawing) {
+        if (data && data.main && data.special) {
           drawnMainNumbers = data.main;
           drawnSpecialNumber = data.special;
           displayDrawnNumbers();
-          if (data.completed) {
+          if (data.completed && !isDrawing) {
             showResults = true;
             calculateAndRenderMatchResults();
           }
@@ -332,7 +332,11 @@
       document.getElementById('draw-status-text').innerText = '攪出特別號碼...';
       await animateBallOut(special, 'res-ball-s');
       document.getElementById('draw-status-text').innerText = '🎉 攪珠完成！';
+      // 設定本地結果
+      drawnMainNumbers = main;
+      drawnSpecialNumber = special;
       showResults = true;
+      calculateAndRenderMatchResults();
       triggerConfetti();
     }
     function generateWinningNumbers() {
@@ -395,7 +399,7 @@
       db.ref('preset').set({ main: win.main, special: win.special });
       db.ref('participants').set(tickets).then(() => {
         document.getElementById('draw-status-text').innerText = '已生成並同步';
-        alert('已生成號碼並同步到 Firebase\nGuest 會即時見到');
+        alert('已生成號碼並同步到 Firebase');
       }).catch(err => alert('同步失敗：' + err.message));
     }
     function willWinPrize(nums, main, special) {
@@ -410,17 +414,21 @@
       isDrawing = true;
       document.getElementById('btn-start-draw').disabled = true;
       await playSequentialDraw(presetMain, presetSpecial);
+      // 寫入 Firebase
       await db.ref('draw').set({ main: presetMain, special: presetSpecial, completed: true, timestamp: Date.now() });
-      showResults = true;
-      calculateAndRenderMatchResults();
       isDrawing = false;
       document.getElementById('btn-start-draw').disabled = false;
     }
     function quickInstantDraw() {
       if (!firebaseReady) { alert('Firebase 未連接'); return; }
       if (!presetMain.length) { alert('請先生成號碼'); return; }
+      drawnMainNumbers = presetMain;
+      drawnSpecialNumber = presetSpecial;
+      displayDrawnNumbers();
+      showResults = true;
+      calculateAndRenderMatchResults();
       db.ref('draw').set({ main: presetMain, special: presetSpecial, completed: true, timestamp: Date.now() })
-        .then(() => { showResults = true; triggerConfetti(); calculateAndRenderMatchResults(); })
+        .then(() => triggerConfetti())
         .catch(err => alert('失敗：' + err.message));
     }
     function resetAll() {
