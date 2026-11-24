@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎄 聖誕六合彩大抽獎（即時同步版） 🎁</title>
+  <title>🎄 聖誕六合彩 - Guest</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
-
-  <!-- Firebase via jsDelivr (更穩定) -->
   <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-database-compat.js"></script>
-
   <script>
     tailwind.config = {
       theme: {
@@ -26,7 +23,6 @@
       }
     }
   </script>
-
   <style>
     body {
       background: linear-gradient(135deg, #051911 0%, #113823 50%, #0a2216 100%);
@@ -66,35 +62,23 @@
       background: #7f1d1d; color: #fecaca; text-align: center;
       padding: 8px 12px; font-size: 13px; font-weight: bold; display: none;
     }
-    .flying-ball {
-      position: fixed; z-index: 50; pointer-events: none;
-      transition: all 0.32s cubic-bezier(0.18, 0.9, 0.3, 1.1);
-    }
   </style>
 </head>
 <body class="p-3 md:p-6 flex flex-col min-h-screen font-sans">
-
   <div id="error-banner"></div>
-
   <header class="text-center my-3 relative">
     <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-xmas-gold via-white to-red-400 font-fun">
       🎅 聖誕六合彩大抽獎 🎁
     </h1>
-    <p class="text-xs md:text-sm text-yellow-200 mt-1 font-bold tracking-widest">
-      🎄 即時同步版 • 逐粒球攪出 🎄
-    </p>
-    <div class="absolute right-0 top-0 flex gap-2">
+    <p class="text-xs md:text-sm text-yellow-200 mt-1 font-bold tracking-widest">🎄 觀眾模式 • 即時睇結果 🎄</p>
+    <div class="absolute right-0 top-0">
       <button id="btn-sound" onclick="toggleSound()" class="p-2 bg-white/10 hover:bg-white/20 rounded-full text-yellow-300">
         <i class="fa-solid fa-volume-high"></i>
       </button>
-      <button onclick="openSettingsModal()" class="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white">
-        <i class="fa-solid fa-gear"></i>
-      </button>
     </div>
   </header>
-
   <main class="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto w-full flex-grow">
-    <section class="lg:col-span-5 glass-card rounded-2xl p-5 flex flex-col items-center min-h-[640px]">
+    <section class="lg:col-span-5 glass-card rounded-2xl p-5 flex flex-col items-center min-h-[520px]">
       <div class="w-full text-center bg-black/40 border border-yellow-500/30 rounded-xl p-3">
         <div class="text-xs text-yellow-300 font-bold uppercase">攪珠結果 (6主 + 1特別)</div>
         <div class="flex items-center justify-center gap-1.5 md:gap-2 mt-3 min-h-[52px]">
@@ -108,39 +92,20 @@
           <div id="res-ball-s" class="ball result-slot w-9 h-9 text-xs bg-black/40 border border-yellow-400/50">特</div>
         </div>
       </div>
-
       <div class="my-5 flex flex-col items-center">
-        <div id="drum" class="drum-container">
-          <div id="tumbling-holder" class="w-full h-full relative"></div>
-        </div>
-        <div id="draw-status-text" class="text-sm font-bold text-yellow-300 mt-3 h-6">準備就緒</div>
-      </div>
-
-      <div class="w-full space-y-2">
-        <button id="btn-start-draw" onclick="startLotteryDraw()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 via-xmas-gold to-yellow-600 text-gray-900 font-black text-xl shadow-lg active:scale-95">
-          <i class="fa-solid fa-circle-play"></i> 開始攪珠（逐粒）
-        </button>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="quickInstantDraw()" class="py-2.5 rounded-lg bg-emerald-800 text-emerald-100 text-xs font-bold">
-            <i class="fa-solid fa-bolt"></i> 極速開獎
-          </button>
-          <button onclick="generateRandomCardsFor80()" class="py-2.5 rounded-lg bg-indigo-900 text-indigo-100 text-xs font-bold">
-            <i class="fa-solid fa-shuffle"></i> 隨機派票
-          </button>
-        </div>
+        <div id="drum" class="drum-container"><div id="tumbling-holder" class="w-full h-full relative"></div></div>
+        <div id="draw-status-text" class="text-sm font-bold text-yellow-300 mt-3 h-6">連接中...</div>
       </div>
     </section>
-
-    <section class="lg:col-span-7 glass-card rounded-2xl p-4 flex flex-col h-[640px]">
+    <section class="lg:col-span-7 glass-card rounded-2xl p-4 flex flex-col h-[520px]">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
         <div class="flex gap-2">
           <button id="tab-btn-rank" onclick="switchTab('rank')" class="px-3 py-1.5 rounded-lg bg-xmas-gold text-gray-900 font-black text-xs">🏆 中獎排行榜</button>
-          <button id="tab-btn-cards" onclick="switchTab('cards')" class="px-3 py-1.5 rounded-lg bg-white/10 text-gray-200 font-bold text-xs">🎟️ 彩票總覽</button>
+          <button id="tab-btn-cards" onclick="switchTab('cards')" class="px-3 py-1.5 rounded-lg bg-white/10 text-gray-200 font-bold text-xs">🎟️ 名單總覽</button>
         </div>
-        <button onclick="copyResults()" class="bg-blue-700 text-white text-[11px] px-2.5 py-1.5 rounded-lg font-bold">複製結果</button>
       </div>
       <div id="tab-rank" class="flex-grow overflow-y-auto space-y-2 pr-1">
-        <div class="text-xs text-yellow-200/80 bg-black/20 p-2 rounded-lg">ℹ️ Host 開獎後，所有人手機會即時顯示同一結果。</div>
+        <div class="text-xs text-yellow-200/80 bg-black/20 p-2 rounded-lg">ℹ️ 結果會即時更新，請等候 Host 開獎。</div>
         <div id="rankings-container" class="space-y-2"></div>
       </div>
       <div id="tab-cards" class="flex-grow overflow-y-auto hidden pr-1">
@@ -148,20 +113,6 @@
       </div>
     </section>
   </main>
-
-  <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card bg-gray-900/95 border border-yellow-500/40 rounded-2xl max-w-2xl w-full p-5 max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-lg font-bold text-xmas-gold">⚙️ 設定參加者（會同步）</h3>
-        <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <textarea id="participants-input" class="w-full h-56 bg-black/60 border border-gray-700 rounded-xl p-3 text-xs font-mono" placeholder="姓名 或 姓名 號碼1,號碼2,..."></textarea>
-      <div class="mt-4 flex justify-end">
-        <button onclick="saveSettings()" class="px-4 py-2 bg-xmas-gold text-gray-900 rounded-lg font-bold">儲存並同步</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCSpQW-Q8ojSH9coIMdxM2hmlYOYWB5oVg",
@@ -173,89 +124,58 @@
       appId: "1:706743423259:web:8d8c6c073dca84d4e603be",
       measurementId: "G-JWBDJSZW13"
     };
-
-    let db = null;
-    let firebaseReady = false;
-
+    let db = null, firebaseReady = false;
     function showError(msg) {
       const banner = document.getElementById('error-banner');
       banner.innerText = '⚠️ ' + msg;
       banner.style.display = 'block';
     }
-
     function initFirebase() {
       try {
-        if (typeof firebase === 'undefined') {
-          showError('Firebase SDK 載入失敗，請檢查網絡或關閉廣告攔截');
-          return;
-        }
+        if (typeof firebase === 'undefined') { showError('Firebase SDK 載入失敗'); return; }
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
         firebaseReady = true;
         initFirebaseSync();
-        document.getElementById('draw-status-text').innerText = 'Firebase 已連接，可以開獎';
-      } catch (err) {
-        console.error(err);
-        showError('Firebase 初始化失敗：' + (err.message || ''));
-      }
+        document.getElementById('draw-status-text').innerText = '已連接，等待開獎...';
+      } catch (err) { showError('Firebase 初始化失敗'); }
     }
-
     const PRIZES = [
-      { name: "1st Prize", amount: "$500.00", item: "Coupon", specialTag: false },
-      { name: "Special Prize", amount: "$300.00", item: "特別現金/禮品", specialTag: true },
-      { name: "2nd Prize", amount: "$300.00", item: "Coupon", specialTag: false },
-      { name: "Special Prize", amount: "$300.00", item: "特別現金/禮品", specialTag: true },
-      { name: "3rd Prize", amount: "$200.00", item: "Coupon", specialTag: false },
-      { name: "Special Prize", amount: "$300.00", item: "特別現金/禮品", specialTag: true },
-      { name: "4th Prize", amount: "$200.00", item: "Coupon", specialTag: false },
-      { name: "5th Prize", amount: "$190.00", item: "Labubu 精品", specialTag: true },
-      { name: "6th Prize", amount: "$190.00", item: "Labubu 精品", specialTag: true },
-      { name: "Special Prize", amount: "$300.00", item: "特別現金/禮品", specialTag: true },
-      { name: "7th Prize", amount: "$128.00", item: "Chiikawa 驚喜娃娃", specialTag: true },
-      { name: "8th Prize", amount: "$100.00", item: "Coupon", specialTag: false },
-      { name: "9th Prize", amount: "$100.00", item: "Coupon", specialTag: false },
-      { name: "10th Prize", amount: "$100.00", item: "Coupon", specialTag: false },
-      { name: "11th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "12th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "13th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "14th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "15th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "16th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "17th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "18th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "19th Prize", amount: "$50.00", item: "Coupon", specialTag: false },
-      { name: "20th Prize", amount: "$50.00", item: "Coupon", specialTag: false }
+      { name: "頭獎", amount: "6個號碼全中", item: "1個" },
+      { name: "二獎", amount: "5個號碼 + 特別號", item: "3個" },
+      { name: "三獎", amount: "5個號碼", item: "4個" },
+      { name: "四獎", amount: "4個號碼 + 特別號", item: "5個" },
+      { name: "五獎", amount: "4個號碼", item: "8個" },
+      { name: "六獎", amount: "3個號碼", item: "9個" }
     ];
-
     const RED_BALLS = [1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46];
     const BLUE_BALLS = [3,4,9,10,14,15,20,25,26,31,32,36,37,41,42,47,48];
     const GREEN_BALLS = [5,6,11,16,17,21,22,27,28,33,38,39,43,44,49];
-
     function getBallColorClass(num) {
       if (RED_BALLS.includes(num)) return 'ball-red';
       if (BLUE_BALLS.includes(num)) return 'ball-blue';
       if (GREEN_BALLS.includes(num)) return 'ball-green';
       return 'ball-red';
     }
-
-    let participants = [];
-    let drawnMainNumbers = [];
-    let drawnSpecialNumber = null;
-    let isDrawing = false;
-    let soundEnabled = true;
-    let tumblingBalls = [];
-    let tumbleInterval = null;
-
+    let participants = [], drawnMainNumbers = [], drawnSpecialNumber = null, soundEnabled = true, tumblingBalls = [], tumbleInterval = null, showResults = false;
     function initFirebaseSync() {
       if (!db) return;
       db.ref('draw').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data && data.main && data.special && !isDrawing) {
-          drawnMainNumbers = data.main;
-          drawnSpecialNumber = data.special;
-          displayDrawnNumbers();
-          calculateAndRenderMatchResults();
-          document.getElementById('draw-status-text').innerText = "🎉 已同步開獎結果！";
+        if (data) {
+          if (data.main && data.main.length > 0) {
+            drawnMainNumbers = data.main;
+            drawnSpecialNumber = data.special;
+            displayDrawnNumbers();
+          }
+          if (data.completed) {
+            showResults = true;
+            calculateAndRenderMatchResults();
+            document.getElementById('draw-status-text').innerText = "🎉 開獎完成！";
+            triggerConfetti();
+          } else if (data.main && data.main.length === 0) {
+            resetDisplay();
+          }
         }
       });
       db.ref('participants').on('value', (snapshot) => {
@@ -263,11 +183,28 @@
         if (data) {
           participants = data;
           renderTicketsGrid();
-          if (drawnMainNumbers.length > 0) calculateAndRenderMatchResults();
+          if (showResults && drawnMainNumbers.length > 0) calculateAndRenderMatchResults();
+        } else {
+          participants = [];
+          renderTicketsGrid();
         }
       });
     }
-
+    function resetDisplay() {
+      drawnMainNumbers = [];
+      drawnSpecialNumber = null;
+      showResults = false;
+      for (let i = 1; i <= 6; i++) {
+        const el = document.getElementById('res-ball-' + i);
+        el.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-white/20';
+        el.innerText = '?';
+      }
+      const elS = document.getElementById('res-ball-s');
+      elS.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-yellow-400/50';
+      elS.innerText = '特';
+      document.getElementById('draw-status-text').innerText = '等待 Host 開獎...';
+      document.getElementById('rankings-container').innerHTML = '';
+    }
     function displayDrawnNumbers() {
       for (let i = 1; i <= 6; i++) {
         const num = drawnMainNumbers[i - 1];
@@ -275,15 +212,20 @@
         if (num && slot) {
           slot.className = 'ball result-slot filled ' + getBallColorClass(num) + ' w-9 h-9 text-xs';
           slot.innerText = num;
+        } else if (slot) {
+          slot.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-white/20';
+          slot.innerText = '?';
         }
       }
       const slotS = document.getElementById('res-ball-s');
       if (drawnSpecialNumber && slotS) {
         slotS.className = 'ball result-slot filled ' + getBallColorClass(drawnSpecialNumber) + ' w-9 h-9 text-xs ring-2 ring-yellow-400';
         slotS.innerText = drawnSpecialNumber;
+      } else if (slotS) {
+        slotS.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-yellow-400/50';
+        slotS.innerText = '特';
       }
     }
-
     function initTumblingBalls() {
       const holder = document.getElementById('tumbling-holder');
       holder.innerHTML = '';
@@ -296,23 +238,15 @@
         ball.style.left = (30 + Math.random() * 180) + 'px';
         ball.style.top = (30 + Math.random() * 180) + 'px';
         holder.appendChild(ball);
-        tumblingBalls.push({
-          el: ball,
-          x: 30 + Math.random() * 180,
-          y: 30 + Math.random() * 180,
-          vx: (Math.random() - 0.5) * 14,
-          vy: (Math.random() - 0.5) * 14
-        });
+        tumblingBalls.push({ el: ball, x: 30 + Math.random() * 180, y: 30 + Math.random() * 180, vx: (Math.random() - 0.5) * 14, vy: (Math.random() - 0.5) * 14 });
       }
       if (tumbleInterval) clearInterval(tumbleInterval);
       tumbleInterval = setInterval(updateTumbling, 16);
     }
-
     function updateTumbling() {
       const max = 210;
       tumblingBalls.forEach(b => {
-        b.x += b.vx;
-        b.y += b.vy;
+        b.x += b.vx; b.y += b.vy;
         if (b.x < 15 || b.x > max) b.vx *= -1;
         if (b.y < 15 || b.y > max) b.vy *= -1;
         b.x = Math.max(15, Math.min(max, b.x));
@@ -321,176 +255,52 @@
         b.el.style.top = b.y + 'px';
       });
     }
-
-    function animateBallOut(num, targetId) {
-      return new Promise(resolve => {
-        const drum = document.getElementById('drum');
-        const target = document.getElementById(targetId);
-        if (!drum || !target) { resolve(); return; }
-
-        const drumRect = drum.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-
-        const fly = document.createElement('div');
-        fly.className = 'ball flying-ball ' + getBallColorClass(num) + ' w-9 h-9 text-xs';
-        fly.innerText = num;
-        fly.style.left = (drumRect.left + drumRect.width / 2 - 18) + 'px';
-        fly.style.top = (drumRect.top + drumRect.height / 2 - 18) + 'px';
-        document.body.appendChild(fly);
-
-        fly.offsetHeight;
-
-        fly.style.left = (targetRect.left + targetRect.width / 2 - 18) + 'px';
-        fly.style.top = (targetRect.top + targetRect.height / 2 - 18) + 'px';
-        fly.style.transform = 'scale(1.2)';
-
-        setTimeout(() => {
-          target.className = 'ball result-slot filled ' + getBallColorClass(num) + ' w-9 h-9 text-xs' + (targetId === 'res-ball-s' ? ' ring-2 ring-yellow-400' : '');
-          target.innerText = num;
-          fly.remove();
-          resolve();
-        }, 320);
-      });
-    }
-
-    async function playSequentialDraw(main, special) {
-      for (let i = 1; i <= 6; i++) {
-        const el = document.getElementById('res-ball-' + i);
-        el.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-white/20';
-        el.innerText = '?';
-      }
-      const elS = document.getElementById('res-ball-s');
-      elS.className = 'ball result-slot w-9 h-9 text-xs bg-black/40 border border-yellow-400/50';
-      elS.innerText = '特';
-
-      document.getElementById('draw-status-text').innerText = '攪珠中...';
-
-      for (let i = 0; i < 6; i++) {
-        document.getElementById('draw-status-text').innerText = '正在攪出第 ' + (i+1) + ' 個號碼';
-        await animateBallOut(main[i], 'res-ball-' + (i+1));
-        await new Promise(r => setTimeout(r, 180));
-      }
-      document.getElementById('draw-status-text').innerText = '攪出特別號碼...';
-      await animateBallOut(special, 'res-ball-s');
-      document.getElementById('draw-status-text').innerText = '🎉 攪珠完成！';
-      triggerConfetti();
-    }
-
-    async function startLotteryDraw() {
-      if (!firebaseReady) { alert('Firebase 未連接'); return; }
-      if (isDrawing) return;
-      isDrawing = true;
-      document.getElementById('btn-start-draw').disabled = true;
-
-      const pool = Array.from({length:49}, (_,i)=>i+1);
-      const drawn = [];
-      while (drawn.length < 7) {
-        const idx = Math.floor(Math.random() * pool.length);
-        drawn.push(pool.splice(idx, 1)[0]);
-      }
-      const main = drawn.slice(0,6).sort((a,b)=>a-b);
-      const special = drawn[6];
-
-      await playSequentialDraw(main, special);
-
-      db.ref('draw').set({ main, special, timestamp: Date.now() })
-        .then(() => {
-          isDrawing = false;
-          document.getElementById('btn-start-draw').disabled = false;
-        })
-        .catch(err => {
-          alert('寫入失敗：' + err.message);
-          isDrawing = false;
-          document.getElementById('btn-start-draw').disabled = false;
-        });
-    }
-
-    function quickInstantDraw() {
-      if (!firebaseReady) { alert('Firebase 未連接'); return; }
-      const pool = Array.from({length:49}, (_,i)=>i+1);
-      const drawn = [];
-      while (drawn.length < 7) {
-        const idx = Math.floor(Math.random() * pool.length);
-        drawn.push(pool.splice(idx, 1)[0]);
-      }
-      db.ref('draw').set({
-        main: drawn.slice(0,6).sort((a,b)=>a-b),
-        special: drawn[6],
-        timestamp: Date.now()
-      }).then(() => triggerConfetti()).catch(err => alert('寫入失敗：' + err.message));
-    }
-
-    function generateRandomCardsFor80() {
-      if (!firebaseReady) { alert('Firebase 未連接'); return; }
-      const newList = [];
-      for (let i = 1; i <= 80; i++) {
-        newList.push({ id: i, name: '參加者 #' + i, numbers: generate6RandomNumbers() });
-      }
-      db.ref('participants').set(newList)
-        .then(() => alert('已同步派發 80 張隨機彩票'))
-        .catch(err => alert('失敗：' + err.message));
-    }
-
-    function saveSettings() {
-      if (!firebaseReady) { alert('Firebase 未連接'); return; }
-      const lines = document.getElementById('participants-input').value.split('\n').map(l=>l.trim()).filter(Boolean);
-      const newParticipants = [];
-      for (let i = 0; i < 80; i++) {
-        const line = lines[i] || '';
-        let name = '參加者 #' + (i+1);
-        let numbers = generate6RandomNumbers();
-        if (line) {
-          const parts = line.split(/\s+/);
-          name = parts[0] || name;
-          const nums = line.match(/\d+/g);
-          if (nums && nums.length >= 6) numbers = nums.slice(-6).map(Number).sort((a,b)=>a-b);
-        }
-        newParticipants.push({ id: i+1, name, numbers });
-      }
-      db.ref('participants').set(newParticipants)
-        .then(() => { closeSettingsModal(); alert('名單已同步更新'); })
-        .catch(err => alert('儲存失敗：' + err.message));
-    }
-
-    function generate6RandomNumbers() {
-      const set = new Set();
-      while (set.size < 6) set.add(Math.floor(Math.random()*49)+1);
-      return Array.from(set).sort((a,b)=>a-b);
-    }
-
     function calculateAndRenderMatchResults() {
-      if (!drawnMainNumbers.length) return;
+      if (!drawnMainNumbers.length || !showResults) return;
       const evaluated = participants.map(p => {
         const mainMatches = (p.numbers || []).filter(n => drawnMainNumbers.includes(n));
         const hasSpecial = (p.numbers || []).includes(drawnSpecialNumber);
-        return { ...p, mainMatchCount: mainMatches.length, hasSpecial, score: mainMatches.length * 10 + (hasSpecial ? 5 : 0) };
-      }).sort((a,b) => b.score - a.score || a.id - b.id);
-      renderRankings(evaluated);
+        let prizeLevel = 0;
+        if (mainMatches.length === 6) prizeLevel = 1;
+        else if (mainMatches.length === 5 && hasSpecial) prizeLevel = 2;
+        else if (mainMatches.length === 5) prizeLevel = 3;
+        else if (mainMatches.length === 4 && hasSpecial) prizeLevel = 4;
+        else if (mainMatches.length === 4) prizeLevel = 5;
+        else if (mainMatches.length === 3) prizeLevel = 6;
+        return { ...p, mainMatchCount: mainMatches.length, hasSpecial, prizeLevel };
+      });
+      const winners = {1:[],2:[],3:[],4:[],5:[],6:[]};
+      evaluated.forEach(p => { if (p.prizeLevel > 0) winners[p.prizeLevel].push(p); });
+      renderRankingsByPrize(winners);
       renderTicketsGrid(evaluated);
     }
-
-    function renderRankings(evaluatedList) {
+    function renderRankingsByPrize(winners) {
       const container = document.getElementById('rankings-container');
       if (!container) return;
       container.innerHTML = '';
       PRIZES.forEach((prize, idx) => {
-        const winner = evaluatedList ? evaluatedList[idx] : null;
-        const div = document.createElement('div');
-        div.className = 'p-3 rounded-xl border flex items-center justify-between ' + (winner ? 'bg-gradient-to-r from-black/50 to-xmas-green/30 border-yellow-500/40' : 'bg-white/5 border-white/10');
-        div.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-full bg-xmas-red font-black text-yellow-300 text-xs flex items-center justify-center">${idx+1}</div>
-            <div>
-              <div class="font-bold text-sm">${prize.name} ${prize.specialTag ? '<span class="text-[9px] bg-amber-500 text-black px-1 rounded">特別</span>' : ''}</div>
-              <div class="text-xs text-yellow-200/80">${prize.amount} (${prize.item})</div>
-            </div>
-          </div>
-          ${winner ? `<div class="text-right"><div class="font-black text-yellow-300 text-sm">${winner.name}</div><div class="text-[11px] text-emerald-300">中 ${winner.mainMatchCount} 個${winner.hasSpecial?'+特別':''}</div></div>` : '<span class="text-xs text-gray-400">待開獎</span>'}
-        `;
-        container.appendChild(div);
+        const level = idx + 1;
+        const list = winners[level] || [];
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-xl border bg-white/5 border-white/10 mb-2';
+        let winnersHtml = '';
+        if (list.length) {
+          winnersHtml = list.map(w => {
+            const nums = (w.numbers || []).map(n => {
+              const isMain = drawnMainNumbers.includes(n);
+              const isSpec = n === drawnSpecialNumber;
+              const cls = isMain ? 'bg-yellow-500 text-black' : (isSpec ? 'bg-purple-500' : 'bg-gray-700');
+              return `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${cls} mr-0.5">${n}</span>`;
+            }).join('');
+            return `<div class="mt-1.5"><div class="text-sm font-bold text-yellow-300">${w.name}</div><div class="mt-0.5">${nums}</div></div>`;
+          }).join('');
+        } else {
+          winnersHtml = '<div class="text-xs text-gray-400">暫無</div>';
+        }
+        card.innerHTML = `<div class="font-bold text-white mb-1">${prize.name} - ${prize.amount} <span class="text-xs text-yellow-200">(${prize.item})</span> <span class="text-emerald-300 text-xs">實際 ${list.length}</span></div>${winnersHtml}`;
+        container.appendChild(card);
       });
     }
-
     function renderTicketsGrid(list) {
       const grid = document.getElementById('tickets-grid');
       if (!grid) return;
@@ -508,40 +318,20 @@
         grid.appendChild(card);
       });
     }
-
     function switchTab(tab) {
       document.getElementById('tab-rank').classList.toggle('hidden', tab !== 'rank');
       document.getElementById('tab-cards').classList.toggle('hidden', tab !== 'cards');
       document.getElementById('tab-btn-rank').className = tab === 'rank' ? 'px-3 py-1.5 rounded-lg bg-xmas-gold text-gray-900 font-black text-xs' : 'px-3 py-1.5 rounded-lg bg-white/10 text-gray-200 font-bold text-xs';
       document.getElementById('tab-btn-cards').className = tab === 'cards' ? 'px-3 py-1.5 rounded-lg bg-xmas-gold text-gray-900 font-black text-xs' : 'px-3 py-1.5 rounded-lg bg-white/10 text-gray-200 font-bold text-xs';
     }
-
-    function openSettingsModal() {
-      document.getElementById('participants-input').value = participants.map(p => p.name + ' ' + (p.numbers||[]).join(', ')).join('\n');
-      document.getElementById('settings-modal').classList.remove('hidden');
-    }
-    function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
-
-    function copyResults() {
-      if (!drawnMainNumbers.length) return alert('請先開獎');
-      const text = '主號碼：' + drawnMainNumbers.join(', ') + ' | 特別號：' + drawnSpecialNumber;
-      navigator.clipboard.writeText(text).then(() => alert('已複製')).catch(() => prompt('複製：', text));
-    }
-
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('btn-sound').innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
     }
-
     function triggerConfetti() {
       if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 75, colors: ['#FFD700','#D42426','#165B33','#fff'] });
     }
-
-    window.onload = function() {
-      initTumblingBalls();
-      renderRankings();
-      initFirebase();
-    };
+    window.onload = function() { initTumblingBalls(); initFirebase(); };
   </script>
 </body>
 </html>
